@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(untitled Examples/array_as_function_param.cpp)
+add_executable(untitled Examples/find_substr.cpp)
