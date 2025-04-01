@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(untitled Knuth_practice/algorithm_E_generalized[1.2.1].cpp)
+add_executable(untitled Examples/array_safe_index.cpp)
