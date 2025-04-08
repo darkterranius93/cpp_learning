@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(untitled Examples/new_delete_dynamic_memory.cpp)
+add_executable(untitled Knuth_practice/storehouse_inventory_extended.cpp)
