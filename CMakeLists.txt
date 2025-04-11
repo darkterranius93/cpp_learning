@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(untitled Knuth_practice/storehouse_inventory_extended.cpp)
+add_executable(untitled Examples/assign_structures.cpp)
