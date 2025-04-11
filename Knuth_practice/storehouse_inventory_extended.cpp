@@ -21,20 +21,76 @@ struct inv_type {
 
 void init_list();
 int menu();
+
+/**
+* Команда меню для ввода товаров в инвентарную ведомость
+*/
 void enter_command();
+
+/**
+* Команда меню для отображения на экране инвентарной ведомости
+*/
 void display_command();
+
+/**
+ * Команда меню для изменения существующего товара
+ */
 void update_command();
+
+/**
+* Команда меню для поиска и отображения данных конкретного товара
+*/
 void find_command();
+
+/**
+* Команда меню для удаления товара
+*/
 void remove_command();
+
+/**
+ * Команда меню для очистки инвентарной ведомости
+ */
+void clean_command();
+
+/**
+ * Ввод данных для конкретного товара
+ * @param index Индекс товара
+ */
 void input(int index);
+
+/**
+ * Отображение в консоль данных по товару
+ * @param index Индекс товара
+ */
 void display_item(int index);
+
+/**
+* Удаление товара
+* @param index Индекс товара
+*/
 void delete_item(int index);
-void move_item(int from_index, int to_index);
+
+/**
+* Очищение данных (удаление товара)
+* @param index Индекс товара
+*/
+void clean_item(int index);
+
+/**
+ * Поиск товара по названию
+ * @return Индекс товара | -1, если индекс не найден
+ */
 int find_item_index_by_name();
+
+/**
+ * Генерация тестовых данных
+ */
+void generate_mocks();
 
 int main() {
     char choice;
     init_list();
+    generate_mocks();
 
     for (;;) {
         choice = menu();
@@ -44,18 +100,35 @@ int main() {
             case 'u': update_command(); break;
             case 'f': find_command(); break;
             case 'r': remove_command(); break;
+            case 'c': clean_command(); break;
             case 'q': return 0;
         }
     }
     return 0;
 }
 
-// Инициализация массива структур
+/**
+* Инициализация массива структур
+*/
 void init_list() {
-    int t;
+    int index;
     // Имя нулевой длины означает пустое имя
-    for (t = 0; t < SIZE; t++) {
-        *invtrv[t].item = '\0';
+    for (index = 0; index < SIZE; index++) {
+        *invtrv[index].item = '\0';
+    }
+}
+
+void generate_mocks() {
+    int index;
+    // Имя нулевой длины означает пустое имя
+    for (index = 0; index < SIZE; index++) {
+        std::string itemTitle = "Test" + std::to_string(index);
+        strcpy(invtrv[index].item, itemTitle.c_str());
+
+        invtrv[index].cost = 1.0;
+        invtrv[index].retail = 1.0;
+        invtrv[index].on_hand = 0;
+        invtrv[index].lead_time = 0;
     }
 }
 
@@ -71,20 +144,18 @@ int menu() {
         std::cout << "(D)isplay" << std::endl; // Отобразить всю ведомость
         std::cout << "(U)pdate" << std::endl; // Изменить элемент
         std::cout << "(F)ind" << std::endl; // Найти элемент
-        std::cout << "(R)emove" << std::endl; // Найти элемент
+        std::cout << "(R)emove" << std::endl; // Удалить элемент
+        std::cout << "(C)clean" << std::endl; // Очистить ведомость
         std::cout << "(Q)uit" << std::endl; // Выйти из программы
         std::cout << std::endl;
 
         std::cout << "Выберите команду: ";
         std::cin >> ch;
-    } while(!strchr("eduqfr", tolower(ch)));
+    } while(!strchr("eduqfrc", tolower(ch)));
 
     return tolower(ch);
 }
 
-/**
-* Ввод элементов в инвентарную ведомость
-*/
 void enter_command() {
     int i;
 
@@ -103,19 +174,15 @@ void enter_command() {
     input(i);
 }
 
-/**
-* Отображение на экране инвентарной ведомости
-*/
 void display_command() {
-    int t;
-    for (t = 0; t < SIZE; t++) {
-        if (*invtrv[t].item) {
-            display_item(t);
+    int index;
+    for (index = 0; index < SIZE; index++) {
+        if (*invtrv[index].item) {
+            display_item(index);
         }
     }
 }
 
-// Модификация существующего элемента
 void update_command() {
     int index = find_item_index_by_name();
 
@@ -128,9 +195,6 @@ void update_command() {
     input(index);
 }
 
-/**
-* Поиск и отображение данных конкретного товара
-*/
 void find_command() {
     int index = find_item_index_by_name();
 
@@ -142,9 +206,6 @@ void find_command() {
     display_item(index);
 }
 
-/**
-* Удаление товара
-*/
 void remove_command() {
     int index = find_item_index_by_name();
 
@@ -156,9 +217,15 @@ void remove_command() {
     delete_item(index);
 }
 
-/**
-* @return int Индекс товара | -1, если индекс не найден
-*/
+void clean_command() {
+    int index;
+    for (index = 0; index < SIZE; index++) {
+        if (*invtrv[index].item) {
+            clean_item(index);
+        }
+    }
+}
+
 int find_item_index_by_name() {
     int i;
     char name[80];
@@ -179,7 +246,7 @@ int find_item_index_by_name() {
 * Ввод информации товара
 * @param int индекс
 */
-void input(int index) {
+void input(const int index) {
     std::cout << "Товар: ";
     std::cin >> invtrv[index].item;
 
@@ -199,7 +266,7 @@ void input(int index) {
 /**
 * Отображение данных товара
 */
-void display_item(int index) {
+void display_item(const int index) {
     if (!*invtrv[index].item) {
         return;
     }
@@ -210,41 +277,27 @@ void display_item(int index) {
     std::cout << "До пополнения осталось: " << invtrv[index].lead_time << " дней" << std::endl << std::endl;
 }
 
-/**
-* Удаление товара
-*/
-void delete_item(int index) {
+void delete_item(const int index) {
     if (!*invtrv[index].item) {
         return;
     }
 
     // Очищение данных (удаление товара)
-    //*invtrv[index].item = '\0';
+    clean_item(index);
 
-    double *cost = &invtrv[index].cost;
-    cost = new double;
-
-    double *retail = &invtrv[index].retail;
-    retail = new double;
-
-    int *on_hand = &invtrv[index].on_hand;
-    on_hand = new int;
-
-    int *lead_time = &invtrv[index].lead_time;
-    lead_time = new int;
-
-    // Если за товаром находился другой - сдвигаем
-    while (*invtrv[index+1].item && index < SIZE) {
-          move_item(index+1, index);
-          index++;
+    // Если за товаром находился другой - сдвигаем его на место текущего
+    // и рекурсивно идем и сдвигаем следующие в списке
+    while (*invtrv[index+1].item) {
+        invtrv[index] = invtrv[index+1];
+        delete_item(index+1);
     }
 }
 
-/**
-* Изменение позиции (индекса) товара
-* @param int с позиции (индекса)
-* @param int на позицию (индекс)
-*/
-void move_item(int from_index, int to_index) {
-
+void clean_item(const int index) {
+    *invtrv[index].item = '\0';
+    invtrv[index].cost = 0.0;
+    invtrv[index].retail = 0.0;
+    invtrv[index].on_hand = 0;
+    invtrv[index].lead_time = 0;
 }
+
