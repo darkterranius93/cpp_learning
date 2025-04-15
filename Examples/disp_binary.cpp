@@ -4,6 +4,8 @@
 //
 #import <iostream>
 
+void disp_binary(unsigned u);
+
 void disp_binary(unsigned u) {
     // register int t;
     int t;
