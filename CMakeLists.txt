@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(untitled Examples/display_ascii_in_binary_code.cpp)
+add_executable(untitled Examples/friend_function.cpp)
