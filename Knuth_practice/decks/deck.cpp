@@ -29,7 +29,20 @@ class Deck {
 
 
 /**
-* Расширение хранилища элементов дека
+* Инициализатор
+*/
+template <typename DeckItem>
+Deck<DeckItem>::Deck() {
+    capacity = DEFAULT_CAPACITY;
+    items = new DeckItem*[capacity];
+    startIndex = UNKNOWN_INDEX;
+    endIndex = UNKNOWN_INDEX;
+
+}
+
+/**
+* Увеличение памяти (объема) дека на DEFAULT_CAPACITY элементов
+* и перемещение старых данных в центр этой области памяти
 */
 template <typename DeckItem>
 void Deck<DeckItem>::extend() {
@@ -59,6 +72,9 @@ void Deck<DeckItem>::extend() {
     }
 }
 
+/**
+* Вставка элемента в дек справа
+*/
 template <typename DeckItem>
 void Deck<DeckItem>::put_right(DeckItem value) {
     // Если справа нет места - расширяем память
@@ -79,6 +95,9 @@ void Deck<DeckItem>::put_right(DeckItem value) {
     items[insertIndex] = new int(value);
 }
 
+/**
+* Вставка элемента в дек слева
+*/
 template <typename DeckItem>
 void Deck<DeckItem>::put_left(DeckItem value) {
     // Если слева нет места - расширяем память
@@ -98,15 +117,51 @@ void Deck<DeckItem>::put_left(DeckItem value) {
     items[startIndex] = new int(value);
 }
 
+/**
+* Получение элемента дека справа
+*/
 template <typename DeckItem>
-Deck<DeckItem>::Deck() {
-    capacity = DEFAULT_CAPACITY;
-    items = new DeckItem*[capacity];
-    startIndex = UNKNOWN_INDEX;
-    endIndex = UNKNOWN_INDEX;
+std::optional<DeckItem> Deck<DeckItem>::pop_right() {
+    if (this->isEmpty()) {
+        return std::nullopt;
+    }
 
+    std::optional<DeckItem> value = *items[endIndex];
+    items[endIndex] = NULL;
+
+    if (items[endIndex - 1] == NULL) {
+        startIndex = endIndex = UNKNOWN_INDEX;
+    } else {
+        endIndex = endIndex - 1;
+    }
+
+    return value;
 }
 
+/**
+* Получение элемента дека слева
+*/
+template <typename DeckItem>
+std::optional<DeckItem> Deck<DeckItem>::pop_left() {
+    if (this->isEmpty()) {
+        return std::nullopt;
+    }
+
+    std::optional<DeckItem> value = *items[startIndex];
+    items[startIndex] = NULL;
+
+    if (items[startIndex + 1] == NULL) {
+        startIndex = endIndex = UNKNOWN_INDEX;
+    } else {
+        startIndex = startIndex + 1;
+    }
+
+    return value;
+}
+
+/**
+* Вывод дека в консоль
+*/
 template <typename DeckItem>
 void Deck<DeckItem>::print_values() {
 //    int from = startIndex == UNKNOWN_INDEX ? 0 : startIndex;
